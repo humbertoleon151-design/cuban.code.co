@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baseplate — Roblox &amp; Coding Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1b1d24;
+    --surface: #23262f;
+    --surface-2: #2b2f3a;
+    --line: #383c47;
+    --text: #f3f4f6;
+    --muted: #9aa0ac;
+    --teal: #5eead4;
+    --amber: #fdba74;
+    --radius: 3px;
+    --unit: 8px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  a{ color:inherit; }
+  h1,h2,h3, .display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 32px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(27,29,36,0.82);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:600; font-size:1.05rem; }
+  .brand .stud{
+    width:14px; height:14px; background:var(--teal);
+    border-radius:50%;
+    box-shadow: 0 0 0 3px rgba(94,234,212,0.18);
+  }
+  .navlinks{ display:flex; gap:28px; font-size:0.92rem; color:var(--muted); }
+  .navlinks a{ text-decoration:none; transition:color .15s ease; }
+  .navlinks a:hover{ color:var(--text); }
+  .navlinks a:focus-visible, a:focus-visible, button:focus-visible{
+    outline:2px solid var(--teal); outline-offset:3px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{ padding:96px 0 72px; position:relative; }
+  .hero .kicker{
+    color:var(--teal); font-size:0.85rem; margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .hero .kicker .bar{ width:28px; height:2px; background:var(--teal); }
+  .hero h1{
+    font-size:clamp(2.4rem, 6vw, 4.3rem);
+    font-weight:700; line-height:1.03; max-width:14ch;
+  }
+  .hero p.sub{
+    margin-top:24px; max-width:52ch; color:var(--muted); font-size:1.08rem;
+  }
+  .hero .ctas{ margin-top:36px; display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 20px; border-radius:var(--radius);
+    font-size:0.92rem; font-weight:500; text-decoration:none;
+    border:1px solid var(--line); transition:transform .15s ease, border-color .15s ease;
+  }
+  .btn.primary{ background:var(--teal); color:#0d1f1c; border-color:var(--teal); }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.ghost:hover{ border-color:var(--teal); }
+
+  /* stacked blocks, assembled on load — the one orchestrated moment */
+  .stack{
+    position:absolute; right:32px; top:110px;
+    display:flex; flex-direction:column; gap:6px;
+    width:180px;
+  }
+  .stack .block{
+    height:34px; border-radius:2px;
+    background:var(--surface-2); border:1px solid var(--line);
+    opacity:0; transform:translateY(-24px);
+    animation: drop .5s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  .stack .block:nth-child(1){ width:70%; animation-delay:.05s; background:var(--teal); border-color:var(--teal); }
+  .stack .block:nth-child(2){ width:100%; animation-delay:.18s; }
+  .stack .block:nth-child(3){ width:55%; animation-delay:.31s; background:var(--amber); border-color:var(--amber); }
+  .stack .block:nth-child(4){ width:85%; animation-delay:.44s; }
+  @keyframes drop{ to{ opacity:1; transform:translateY(0); } }
+  @media (max-width:860px){ .stack{ display:none; } }
+
+  /* ---------- Section shell ---------- */
+  section{ padding:88px 0; border-top:1px solid var(--line); }
+  .section-head{ margin-bottom:44px; }
+  .section-head .tag{ color:var(--amber); font-size:0.82rem; margin-bottom:10px; }
+  .section-head h2{ font-size:clamp(1.6rem, 3.4vw, 2.2rem); }
+  .section-head p{ color:var(--muted); margin-top:12px; max-width:56ch; }
+
+  /* ---------- Videos ---------- */
+  .videos{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  @media (max-width:760px){ .videos{ grid-template-columns:1fr; } }
+  .video-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .video-card .frame{ position:relative; width:100%; aspect-ratio:16/9; background:#000; }
+  .video-card iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .video-card .meta{ padding:18px 20px 22px; }
+  .video-card .meta .label{ font-size:0.78rem; color:var(--teal); margin-bottom:6px; }
+  .video-card .meta h3{ font-size:1.08rem; font-weight:600; }
+  .video-card .meta p{ color:var(--muted); font-size:0.92rem; margin-top:8px; }
+
+  /* ---------- Skills ---------- */
+  .skills{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+  @media (max-width:760px){ .skills{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .skills{ grid-template-columns:1fr; } }
+  .skill{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; position:relative;
+  }
+  .skill .idx{ font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--muted); }
+  .skill h3{ font-size:1rem; font-weight:600; margin-top:10px; }
+  .skill p{ color:var(--muted); font-size:0.88rem; margin-top:8px; }
+
+  /* ---------- Projects ---------- */
+  .projects{ display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  .project{
+    background:var(--surface); padding:26px 28px;
+    display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center;
+    transition:background .15s ease;
+  }
+  .project:hover{ background:var(--surface-2); }
+  .project h3{ font-size:1.12rem; font-weight:600; }
+  .project p{ color:var(--muted); font-size:0.92rem; margin-top:6px; max-width:60ch; }
+  .project .stack-tags{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .project .stack-tags span{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--teal);
+    border:1px solid var(--line); padding:3px 8px; border-radius:2px;
+  }
+  .project .link{
+    font-size:0.88rem; color:var(--text); text-decoration:none; white-space:nowrap;
+    border-bottom:1px solid var(--muted);
+  }
+  .project .link:hover{ border-color:var(--teal); color:var(--teal); }
+  @media (max-width:640px){ .project{ grid-template-columns:1fr; } }
+
+  /* ---------- Contact / Footer ---------- */
+  footer{ padding:80px 0 60px; border-top:1px solid var(--line); }
+  footer h2{ font-size:clamp(1.8rem,4vw,2.6rem); max-width:16ch; }
+  footer p{ color:var(--muted); margin-top:16px; max-width:48ch; }
+  .contact-row{ margin-top:32px; display:flex; gap:16px; flex-wrap:wrap; }
+  .foot-bottom{
+    margin-top:64px; padding-top:24px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; color:var(--muted); font-size:0.82rem; flex-wrap:wrap; gap:8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="brand"><span class="stud"></span> YOUR NAME</div>
+    <div class="navlinks">
+      <a href="#videos">Devlogs</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero wrap" style="border-top:none;">
+    <div class="kicker"><span class="bar"></span> ROBLOX DEVELOPER &amp; PROGRAMMER</div>
+    <h1>I build worlds out of parts and Lua.</h1>
+    <p class="sub">Scripting gameplay systems, building environments, and shipping experiences in Roblox Studio — with the process documented below.</p>
+    <div class="ctas">
+      <a class="btn primary" href="#videos">Watch the devlogs</a>
+      <a class="btn ghost" href="#projects">See the projects</a>
+    </div>
+    <div class="stack" aria-hidden="true">
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+    </div>
+  </section>
+
+  <section id="videos" class="wrap">
+    <div class="section-head">
+      <div class="tag">// devlogs</div>
+      <h2>Watch it get built</h2>
+      <p>Two builds, start to finish — the systems, the bugs, and what actually shipped.</p>
+    </div>
+    <div class="videos">
+      <div class="video-card">
+        <div class="frame">
+          <iframe src="https://www.youtube.com/embed/1e4Chw5zpuo" title="Devlog 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="meta">
+          <div class="label mono">DEVLOG_01</div>
+          <h3>Edit me: project title</h3>
+          <p>Edit me: a line or two on what this build is and what you scripted.</p>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="frame">
+          <iframe src="https://www.youtube.com/embed/I9s5so3vOV4?start=5" title="Devlog 2" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="meta">
+          <div class="label mono">DEVLOG_02</div>
+          <h3>Edit me: project title</h3>
+          <p>Edit me: a line or two on what this build is and what you scripted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="wrap">
+    <div class="section-head">
+      <div class="tag">// stack</div>
+      <h2>What I work with</h2>
+      <p>The tools and systems I reach for most, from scripting to shipping.</p>
+    </div>
+    <div class="skills">
+      <div class="skill"><div class="idx mono">LUA</div><h3>Gameplay scripting</h3><p>Server/client systems, remotes, module architecture.</p></div>
+      <div class="skill"><div class="idx mono">DS</div><h3>DataStores</h3><p>Saving player progress and inventories reliably.</p></div>
+      <div class="skill"><div class="idx mono">UI</div><h3>Interface design</h3><p>Menus and HUDs built in Studio's UI system.</p></div>
+      <div class="skill"><div class="idx mono">ENV</div><h3>Building &amp; terrain</h3><p>Blocking out environments and lighting a scene.</p></div>
+      <div class="skill"><div class="idx mono">ANI</div><h3>Animation</h3><p>Rigging and posing characters and props.</p></div>
+      <div class="skill"><div class="idx mono">OPT</div><h3>Optimization</h3><p>Keeping frame rate and server load in check.</p></div>
+    </div>
+  </section>
+
+  <section id="projects" class="wrap">
+    <div class="section-head">
+      <div class="tag">// projects</div>
+      <h2>Recent work</h2>
+      <p>A few builds worth a closer look. Swap these for your own.</p>
+    </div>
+    <div class="projects">
+      <div class="project">
+        <div>
+          <h3>Edit me: Project One</h3>
+          <p>Edit me: what the game is, your role, and what you're proud of.</p>
+          <div class="stack-tags"><span>Lua</span><span>Building</span></div>
+        </div>
+        <a class="link" href="#" target="_blank" rel="noopener">Play on Roblox →</a>
+      </div>
+      <div class="project">
+        <div>
+          <h3>Edit me: Project Two</h3>
+          <p>Edit me: what the game is, your role, and what you're proud of.</p>
+          <div class="stack-tags"><span>Lua</span><span>UI</span></div>
+        </div>
+        <a class="link" href="#" target="_blank" rel="noopener">Play on Roblox →</a>
+      </div>
+      <div class="project">
+        <div>
+          <h3>Edit me: Project Three</h3>
+          <p>Edit me: what the game is, your role, and what you're proud of.</p>
+          <div class="stack-tags"><span>Lua</span><span>DataStores</span></div>
+        </div>
+        <a class="link" href="#" target="_blank" rel="noopener">Play on Roblox →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact" class="wrap">
+    <h2>Want to build something together?</h2>
+    <p>Reach out about collabs, freelance scripting, or just to talk Roblox dev.</p>
+    <div class="contact-row">
+      <a class="btn primary" href="mailto:you@example.com">Email me</a>
+      <a class="btn ghost" href="#">Roblox profile</a>
+      <a class="btn ghost" href="#">GitHub</a>
+      <a class="btn ghost" href="#">Discord</a>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Your Name</span>
+      <span class="mono">baseplate.dev</span>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>
