@@ -252,7 +252,7 @@
     <h2>Want to build something together?</h2>
     <p>Reach out about collabs, freelance scripting, or just to talk Roblox dev.</p>
     <div class="contact-row">
-      <span class="btn primary" style="cursor:default;">Discord: .cuban</span>
+      <button class="btn primary" id="discordBtn" onclick="copyDiscord()" style="cursor:pointer; border:1px solid var(--teal); font-family:inherit;">Discord: .cuban</button>
     </div>
     <div class="foot-bottom">
       <span>© 2026 Cuban</span>
@@ -261,5 +261,17 @@
   </footer>
 </main>
 
+<script>
+function copyDiscord(){
+  const btn = document.getElementById('discordBtn');
+  navigator.clipboard.writeText('.cuban').then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'Copied — paste it in Discord!';
+    setTimeout(() => { btn.textContent = original; }, 1800);
+  }).catch(() => {
+    alert('My Discord is .cuban — add me there!');
+  });
+}
+</script>
 </body>
 </html>
