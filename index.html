@@ -117,8 +117,11 @@
     box-shadow: 0 0 0 3px rgba(94,234,212,0.18);
   }
   .cover-banner{
-    width:100%; aspect-ratio: 1792 / 592; max-height:340px;
-    object-fit:cover; display:block;
+    width:100vw; height:auto;
+    display:block;
+    position:relative;
+    left:50%; right:50%;
+    margin-left:-50vw; margin-right:-50vw;
     border-bottom:1px solid var(--line);
     filter:saturate(1.05);
   }
