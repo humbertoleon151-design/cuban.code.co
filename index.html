@@ -188,6 +188,46 @@
   footer{ margin:32px 0 8px; color:var(--muted); font-size:.82rem; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
   footer a:hover{ color:var(--text); text-decoration:underline; }
 
+
+  /* ---------- Orders ---------- */
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
+  @media (max-width:700px){ .steps{ grid-template-columns:1fr; } }
+  .step{ background:var(--card); border-radius:var(--r); padding:14px 16px; display:flex; gap:12px; align-items:flex-start; }
+  .step .n{ flex:none; width:28px; height:28px; border-radius:50%; background:var(--blue); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:.85rem; }
+  .step b{ display:block; font-size:.95rem; }
+  .step span{ color:var(--muted); font-size:.85rem; }
+  .services{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:12px; }
+  .service{ background:var(--card); border:2px solid transparent; border-radius:var(--r); padding:16px; text-align:left; color:var(--text); cursor:pointer; transition:border-color .12s, background .12s; }
+  .service:hover{ background:var(--card-2); }
+  .service.selected{ border-color:var(--blue); background:var(--card-2); }
+  .service h3{ font-size:1rem; font-weight:700; }
+  .service p{ color:var(--muted); font-size:.85rem; margin-top:4px; }
+  .service .pick{ display:inline-block; margin-top:10px; font-size:.8rem; font-weight:700; color:#8fa8ff; }
+  .service.selected .pick{ color:var(--green); }
+  .order{ background:var(--card); border-radius:var(--r); padding:24px; }
+  .order h3{ font-size:1.15rem; font-weight:800; margin-bottom:16px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:700px){ .grid2{ grid-template-columns:1fr; } }
+  .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .field label{ font-size:.85rem; font-weight:600; }
+  .field .hint{ font-weight:400; color:var(--muted); }
+  .field input, .field select, .field textarea{
+    background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:var(--r);
+    padding:10px 12px; font:inherit; width:100%;
+  }
+  .field textarea{ min-height:130px; resize:vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:0; border-color:var(--blue); box-shadow:0 0 0 3px rgba(51,95,255,.3); }
+  .field select option{ background:var(--bg); }
+  .hp{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+  .submit-row{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:4px; }
+  .btn:disabled{ opacity:.6; cursor:wait; }
+  .status{ font-size:.9rem; }
+  .status.err{ color:#ff8a8a; }
+  .done{ text-align:center; padding:28px 12px; }
+  .done .check{ width:56px; height:56px; border-radius:50%; background:var(--green); margin:0 auto 14px; display:flex; align-items:center; justify-content:center; }
+  .done h3{ margin-bottom:6px; }
+  .done p{ color:var(--muted); max-width:46ch; margin:0 auto 16px; }
+
   /* Avatars fall back to a plain disc until an image is set */
   .av{ background:linear-gradient(160deg,#f6b8c1,#d86a80); object-fit:cover; display:block; }
   .av:not([src]), .av[src=""]{ visibility:visible; }
@@ -204,6 +244,7 @@
     <a href="#videos">Devlogs</a>
     <a href="#skills">Skills</a>
     <a href="#games">Games</a>
+    <a href="#order">Order</a>
     <a href="#about">About</a>
   </nav>
   <div class="searchwrap" id="searchwrap">
@@ -219,7 +260,7 @@
     </div>
   </div>
   <div class="top-right">
-    <a class="btn blue" href="#contact">Contact</a>
+    <a class="btn green" href="#order">Order now</a>
   </div>
 </header>
 
@@ -239,6 +280,9 @@
     <a class="item" href="#skills">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg> Skills
     </a>
+    <a class="item" href="#order">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 6h15l-2 9H8z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg> Order
+    </a>
     <a class="item" href="#about">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg> About
     </a>
@@ -247,7 +291,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg> Contact
     </a>
     <hr>
-    <p class="note">Scripter and builder in Roblox Studio.</p>
+    <p class="note">Open for commissions. Scripting, building, UI and more.</p>
   </aside>
 
   <main id="top">
@@ -264,7 +308,8 @@
             <p class="tagline">I build worlds out of parts and Lua. Gameplay systems, environments, and finished experiences, with the process documented in devlogs.</p>
           </div>
           <div class="actions">
-            <a class="btn green" href="#games">Play my games</a>
+            <a class="btn green" href="#order">Place an order</a>
+            <a class="btn grey" href="#games">Play my games</a>
             <a class="btn grey" href="https://www.roblox.com/users/60340608/profile" target="_blank" rel="noopener">View on Roblox</a>
           </div>
         </div>
@@ -343,6 +388,93 @@
         </div>
       </section>
 
+
+      <!-- Order -->
+      <section class="block" id="order">
+        <div class="block-head">
+          <h2>Order a commission</h2>
+          <p>Tell me what you need and I'll get back to you</p>
+        </div>
+
+        <div class="steps">
+          <div class="step"><div class="n">1</div><div><b>Send your order</b><span>Pick a service and describe the job.</span></div></div>
+          <div class="step"><div class="n">2</div><div><b>We agree on details</b><span>I reply by email or Discord with scope, price and timing.</span></div></div>
+          <div class="step"><div class="n">3</div><div><b>I build it</b><span>You get updates and the finished work.</span></div></div>
+        </div>
+
+        <div class="services" id="services" role="radiogroup" aria-label="Choose a service">
+          <button type="button" class="service" data-service="Gameplay scripting" role="radio" aria-checked="false"><h3>Gameplay scripting</h3><p>Custom systems like combat, shops, tools and round logic.</p><span class="pick">Select</span></button>
+          <button type="button" class="service" data-service="DataStores / saving" role="radio" aria-checked="false"><h3>DataStores &amp; saving</h3><p>Player progress, inventories and currencies that save reliably.</p><span class="pick">Select</span></button>
+          <button type="button" class="service" data-service="Interface (UI)" role="radio" aria-checked="false"><h3>Interface design</h3><p>Menus, HUDs and shops built in Studio's UI system.</p><span class="pick">Select</span></button>
+          <button type="button" class="service" data-service="Building & terrain" role="radio" aria-checked="false"><h3>Building &amp; terrain</h3><p>Environments, maps and lighting.</p><span class="pick">Select</span></button>
+          <button type="button" class="service" data-service="Animation" role="radio" aria-checked="false"><h3>Animation</h3><p>Rigging and posing for characters and props.</p><span class="pick">Select</span></button>
+          <button type="button" class="service" data-service="Optimization" role="radio" aria-checked="false"><h3>Optimization</h3><p>Fix lag and keep frame rate and server load in check.</p><span class="pick">Select</span></button>
+        </div>
+
+        <div class="order" id="orderBox">
+          <form id="orderForm" novalidate>
+            <h3>Your order</h3>
+            <div class="grid2">
+              <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" type="text" required autocomplete="name"></div>
+              <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" required autocomplete="email"></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="f-discord">Discord username <span class="hint">(optional)</span></label><input id="f-discord" name="discord" type="text"></div>
+              <div class="field">
+                <label for="f-service">Service</label>
+                <select id="f-service" name="service" required>
+                  <option value="">Choose a service</option>
+                  <option>Gameplay scripting</option>
+                  <option>DataStores / saving</option>
+                  <option>Interface (UI)</option>
+                  <option>Building &amp; terrain</option>
+                  <option>Animation</option>
+                  <option>Optimization</option>
+                  <option>Something else</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label for="f-budget">Budget</label>
+                <select id="f-budget" name="budget" required>
+                  <option value="">Choose a range</option>
+                  <option>Under $25</option>
+                  <option>$25 to $50</option>
+                  <option>$50 to $100</option>
+                  <option>$100 to $250</option>
+                  <option>$250+</option>
+                  <option>Not sure yet</option>
+                </select>
+              </div>
+              <div class="field"><label for="f-deadline">Deadline <span class="hint">(optional)</span></label><input id="f-deadline" name="deadline" type="date"></div>
+            </div>
+            <div class="field">
+              <label for="f-details">What do you need?</label>
+              <textarea id="f-details" name="details" required placeholder="Describe the feature or job, and link your game or reference videos if you have them."></textarea>
+            </div>
+
+            <!-- Spam trap and mail settings -->
+            <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <input type="hidden" name="_subject" value="New order from your Roblox portfolio">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+
+            <div class="submit-row">
+              <button class="btn green" type="submit" id="orderSubmit">Send order</button>
+              <span class="status" id="orderStatus" role="status" aria-live="polite"></span>
+            </div>
+          </form>
+
+          <div class="done" id="orderDone" hidden>
+            <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
+            <h3>Order sent</h3>
+            <p>Thanks! I'll reply to the email you gave, or on Discord, to confirm the details.</p>
+            <button class="btn grey" type="button" id="orderAgain">Place another order</button>
+          </div>
+        </div>
+      </section>
+
       <!-- About -->
       <section class="block" id="about">
         <div class="block-head"><h2>About</h2></div>
@@ -357,7 +489,7 @@
         <div class="contact">
           <div>
             <h2>Want to build something together?</h2>
-            <p>Collabs, freelance scripting, or just Roblox dev talk.</p>
+            <p>Collabs, questions, or just Roblox dev talk. For paid work, use the order form above.</p>
           </div>
           <button class="btn blue" id="discordBtn" onclick="copyDiscord()">Copy Discord: .cuban</button>
         </div>
@@ -403,6 +535,63 @@ sInput.addEventListener('focus', () => setMenu(true));
 sInput.addEventListener('click', () => setMenu(true));
 document.addEventListener('click', e => { if (!sWrap.contains(e.target)) setMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu(false); sInput.blur(); } });
+
+/* ---------- Orders ---------- */
+const ORDER_EMAIL = 'humbertoleon151@gmail.com';
+const form = document.getElementById('orderForm');
+const statusEl = document.getElementById('orderStatus');
+const submitBtn = document.getElementById('orderSubmit');
+const doneEl = document.getElementById('orderDone');
+const svcSelect = document.getElementById('f-service');
+const tiles = document.querySelectorAll('.service');
+
+function pickService(name){
+  tiles.forEach(t => {
+    const on = t.dataset.service === name;
+    t.classList.toggle('selected', on);
+    t.setAttribute('aria-checked', on);
+    t.querySelector('.pick').textContent = on ? 'Selected' : 'Select';
+  });
+}
+tiles.forEach(t => t.addEventListener('click', () => {
+  svcSelect.value = t.dataset.service === 'Building & terrain' ? 'Building & terrain' : t.dataset.service;
+  pickService(t.dataset.service);
+  document.getElementById('orderBox').scrollIntoView({ behavior:'smooth', block:'start' });
+}));
+svcSelect.addEventListener('change', () => pickService(svcSelect.value));
+
+function setStatus(msg, isErr){ statusEl.textContent = msg; statusEl.className = 'status' + (isErr ? ' err' : ''); }
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  setStatus('', false);
+  const data = Object.fromEntries(new FormData(form).entries());
+  if (data._honey) return;                      // bots fill this in
+  if (!data.name.trim() || !data.email.trim() || !data.service || !data.budget || !data.details.trim()){
+    setStatus('Please fill in your name, email, service, budget and details.', true); return;
+  }
+  const em = data.email.trim(); const at = em.indexOf('@');
+  if (at < 1 || em.indexOf('.', at) < at + 2 || em.endsWith('.') || em.includes(' ')){
+    setStatus('That email address does not look right.', true); return;
+  }
+  submitBtn.disabled = true; submitBtn.textContent = 'Sending...';
+  try{
+    const res = await fetch('https://formsubmit.co/ajax/' + ORDER_EMAIL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify(Object.assign({}, data, { _replyto: data.email }))
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || out.success === 'false') throw new Error('send failed');
+    form.hidden = true; doneEl.hidden = false; form.reset(); pickService('');
+    doneEl.scrollIntoView({ behavior:'smooth', block:'center' });
+  }catch(err){
+    setStatus('Could not send the order. Try again, or email ' + ORDER_EMAIL + ' directly.', true);
+  }finally{
+    submitBtn.disabled = false; submitBtn.textContent = 'Send order';
+  }
+});
+document.getElementById('orderAgain').addEventListener('click', () => { doneEl.hidden = true; form.hidden = false; });
 
 function copyDiscord(){
   const btn = document.getElementById('discordBtn');
