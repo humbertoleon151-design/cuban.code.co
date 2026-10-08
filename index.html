@@ -47,15 +47,29 @@
   .toplinks{ display:flex; gap:4px; }
   .toplinks a{ padding:6px 12px; border-radius:var(--r); font-weight:600; color:var(--muted); transition:background .12s, color .12s; }
   .toplinks a:hover{ background:var(--card-2); color:var(--text); }
+  .searchwrap{ position:relative; flex:1; max-width:420px; margin:0 auto 0 8px; }
   .search{
-    flex:1; max-width:420px; margin:0 auto 0 8px;
-    background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+    width:100%; background:var(--card); border:1px solid var(--line); border-radius:var(--r);
     padding:6px 12px; color:var(--muted); font-size:.9rem;
-    display:flex; align-items:center; gap:8px;
+    display:flex; align-items:center; gap:8px; cursor:text;
   }
+  .search:focus-within{ border-color:#fff; }
+  .search input{ flex:1; background:none; border:0; outline:0; color:var(--text); font:inherit; min-width:0; }
+  .search input::placeholder{ color:var(--muted); }
+  .menu{
+    position:absolute; top:calc(100% + 6px); left:0; right:0;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+    padding:6px; box-shadow:0 8px 24px rgba(0,0,0,.5);
+  }
+  .menu[hidden]{ display:none; }
+  .result{ display:flex; align-items:center; gap:12px; padding:8px; border-radius:var(--r); }
+  .result:hover, .result:focus-visible{ background:var(--card-2); }
+  .result .av{ width:36px; height:36px; border-radius:50%; flex:none; }
+  .result span{ display:flex; flex-direction:column; line-height:1.25; }
+  .result small{ color:var(--muted); font-size:.8rem; }
   .search svg{ flex:none; }
   .top-right{ margin-left:auto; display:flex; align-items:center; gap:8px; }
-  @media (max-width:900px){ .search{ display:none; } .toplinks{ display:none; } }
+  @media (max-width:900px){ .searchwrap{ display:none; } .toplinks{ display:none; } }
 
   /* ---------- Shell ---------- */
   .shell{ display:flex; padding-top:var(--nav-h); min-height:100vh; }
@@ -192,9 +206,17 @@
     <a href="#games">Games</a>
     <a href="#about">About</a>
   </nav>
-  <div class="search" aria-hidden="true">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-    Search Cuban's profile
+  <div class="searchwrap" id="searchwrap">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="searchInput" type="text" placeholder="Search Cuban's profile" autocomplete="off" aria-label="Search Cuban's profile" aria-expanded="false" aria-controls="searchMenu">
+    </label>
+    <div class="menu" id="searchMenu" hidden>
+      <a class="result" href="https://www.roblox.com/users/60340608/profile" target="_blank" rel="noopener">
+        <img class="av" data-img="avatar" alt="">
+        <span><b>Cuban</b><small>View Roblox profile</small></span>
+      </a>
+    </div>
   </div>
   <div class="top-right">
     <a class="btn blue" href="#contact">Contact</a>
@@ -371,6 +393,16 @@ if (BANNER) {
   c.style.backgroundPosition = 'center 18%, center';
   c.style.backgroundRepeat = 'no-repeat, no-repeat';
 }
+
+
+const sInput = document.getElementById('searchInput');
+const sMenu = document.getElementById('searchMenu');
+const sWrap = document.getElementById('searchwrap');
+function setMenu(open){ sMenu.hidden = !open; sInput.setAttribute('aria-expanded', open); }
+sInput.addEventListener('focus', () => setMenu(true));
+sInput.addEventListener('click', () => setMenu(true));
+document.addEventListener('click', e => { if (!sWrap.contains(e.target)) setMenu(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu(false); sInput.blur(); } });
 
 function copyDiscord(){
   const btn = document.getElementById('discordBtn');
