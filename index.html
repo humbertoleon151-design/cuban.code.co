@@ -282,18 +282,6 @@
   .fine{ font-size:.78rem; color:var(--muted); margin-top:12px; }
   .fine a{ color:var(--link); }
 
-  /* ---------- Reviews ---------- */
-  .summary{ display:flex; align-items:center; gap:10px; margin-bottom:12px; font-weight:700; }
-  .stars{ color:#f5b301; letter-spacing:2px; }
-  .reviews{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-bottom:12px; }
-  .review{ background:var(--card); border-radius:var(--r); padding:16px; }
-  .review p{ margin:8px 0; }
-  .review small{ color:var(--muted); }
-  .empty{ background:var(--card); border-radius:var(--r); padding:20px; color:var(--muted); margin-bottom:12px; }
-  .starpick{ display:flex; gap:2px; }
-  .starpick button{ background:none; border:0; font-size:1.7rem; line-height:1; color:var(--line); cursor:pointer; padding:2px; }
-  .starpick button.on{ color:#f5b301; }
-
   /* ---------- FAQ ---------- */
   .faq details{ background:var(--card); border-radius:var(--r); margin-bottom:8px; }
   .faq summary{ cursor:pointer; padding:14px 16px; font-weight:700; list-style:none; display:flex; justify-content:space-between; gap:12px; }
@@ -318,20 +306,197 @@
     .mobnav a[aria-current="page"]{ background:var(--blue); color:#fff; }
   }
 
+
+  /* ---------- Loading screen + page transition ---------- */
+  .loader{ position:fixed; inset:0; z-index:100; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; transition:opacity .35s ease, visibility 0s linear .35s; }
+  .loader.done{ opacity:0; visibility:hidden; }
+  .loader .av{ width:96px; height:96px; border-radius:50%; border:3px solid var(--card-2); }
+  .load-title{ font-weight:800; font-size:1.3rem; letter-spacing:.06em; }
+  .load-bar{ width:min(260px,70vw); height:10px; background:var(--card-2); border-radius:99px; overflow:hidden; }
+  .load-bar i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:99px; transition:width .12s linear; }
+  .load-sub{ color:var(--muted); font-size:.85rem; }
+  @keyframes pagein{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+  .page.page-in{ animation:pagein .22s ease-out; }
+  .langsel{ background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:var(--r); padding:6px 8px; font:inherit; font-size:.85rem; cursor:pointer; }
+
   /* Avatars fall back to a plain disc until an image is set */
   .av{ background:linear-gradient(160deg,#f6b8c1,#d86a80); object-fit:cover; display:block; }
   .av:not([src]), .av[src=""]{ visibility:visible; }
 </style>
+<script>
+/* Translations. Each row is [English, Spanish, Portuguese, French].
+   The English text must match the text on the page exactly.
+   To add a language, add a column here and one entry in LANGS below,
+   then add an <option> to the language menu in index.html. */
+(function(){
+  const LANGS = ['es', 'pt', 'fr'];
+  const ROWS = [
+    [`Loading...`, `Cargando...`, `Carregando...`, `Chargement...`],
+    [`Home`, `Inicio`, `Início`, `Accueil`],
+    [`Devlogs`, `Devlogs`, `Devlogs`, `Devlogs`],
+    [`Order`, `Pedido`, `Pedido`, `Commande`],
+    [`Tools`, `Herramientas`, `Ferramentas`, `Outils`],
+    [`FAQ`, `Preguntas frecuentes`, `Perguntas frequentes`, `FAQ`],
+    [`About`, `Acerca de`, `Sobre`, `À propos`],
+    [`View Roblox profile`, `Ver perfil de Roblox`, `Ver perfil do Roblox`, `Voir le profil Roblox`],
+    [`Order now`, `Pedir ahora`, `Pedir agora`, `Commander`],
+    [`Open for commissions. Scripting, building, UI and more.`, `Abierto a encargos. Scripting, construcción, interfaces y más.`, `Aberto a encomendas. Scripts, construção, interfaces e mais.`, `Ouvert aux commandes. Scripts, construction, interfaces et plus.`],
+    [`Roblox developer & scripter`, `Desarrollador y scripter de Roblox`, `Desenvolvedor e scripter de Roblox`, `Développeur et scripteur Roblox`],
+    [`I build worlds out of parts and Lua. Gameplay systems, environments, and finished experiences, with the process documented in devlogs.`, `Construyo mundos con partes y Lua. Sistemas de juego, entornos y experiencias terminadas, con el proceso documentado en devlogs.`, `Construo mundos com peças e Lua. Sistemas de jogo, ambientes e experiências finalizadas, com o processo documentado em devlogs.`, `Je construis des mondes avec des parts et du Lua. Systèmes de jeu, environnements et expériences terminées, avec le processus documenté dans des devlogs.`],
+    [`Place an order`, `Hacer un pedido`, `Fazer um pedido`, `Passer une commande`],
+    [`Play my games`, `Jugar mis juegos`, `Jogar meus jogos`, `Jouer à mes jeux`],
+    [`View on Roblox`, `Ver en Roblox`, `Ver no Roblox`, `Voir sur Roblox`],
+    [`Playable games`, `Juegos jugables`, `Jogos jogáveis`, `Jeux jouables`],
+    [`Skills`, `Habilidades`, `Habilidades`, `Compétences`],
+    [`Games`, `Juegos`, `Jogos`, `Jeux`],
+    [`Jump in on Roblox`, `Entra en Roblox`, `Entre no Roblox`, `Rejoignez-les sur Roblox`],
+    [`Play on Roblox`, `Jugar en Roblox`, `Jogar no Roblox`, `Jouer sur Roblox`],
+    [`Coding projects, documented as I build them`, `Proyectos de programación, documentados mientras los construyo`, `Projetos de programação, documentados enquanto os construo`, `Projets de code, documentés au fil de leur création`],
+    [`What I work with most`, `Con lo que más trabajo`, `Com o que mais trabalho`, `Ce avec quoi je travaille le plus`],
+    [`Gameplay scripting`, `Scripting de jugabilidad`, `Scripts de gameplay`, `Scripts de gameplay`],
+    [`Server/client systems, remotes, module architecture.`, `Sistemas servidor/cliente, remotes, arquitectura de módulos.`, `Sistemas servidor/cliente, remotes, arquitetura de módulos.`, `Systèmes serveur/client, remotes, architecture de modules.`],
+    [`Saving player progress and inventories reliably.`, `Guardado fiable del progreso e inventarios de los jugadores.`, `Salvamento confiável do progresso e dos inventários dos jogadores.`, `Sauvegarde fiable de la progression et des inventaires des joueurs.`],
+    [`Interface design`, `Diseño de interfaces`, `Design de interfaces`, `Conception d'interfaces`],
+    [`Menus and HUDs built in Studio's UI system.`, `Menús y HUDs creados con el sistema de UI de Studio.`, `Menus e HUDs criados no sistema de UI do Studio.`, `Menus et HUD créés avec le système d'interface de Studio.`],
+    [`Building & terrain`, `Construcción y terreno`, `Construção e terreno`, `Construction et terrain`],
+    [`Blocking out environments and lighting a scene.`, `Bocetado de entornos e iluminación de escenas.`, `Esboço de ambientes e iluminação de cenas.`, `Blocage des environnements et éclairage d'une scène.`],
+    [`Animation`, `Animación`, `Animação`, `Animation`],
+    [`Rigging and posing characters and props.`, `Rigging y poses de personajes y objetos.`, `Rigging e poses de personagens e objetos.`, `Rigging et poses de personnages et d'accessoires.`],
+    [`Optimization`, `Optimización`, `Otimização`, `Optimisation`],
+    [`Keeping frame rate and server load in check.`, `Control de los FPS y de la carga del servidor.`, `Controle dos FPS e da carga do servidor.`, `Maîtrise des FPS et de la charge du serveur.`],
+    [`Order a commission`, `Encargar un trabajo`, `Encomendar um trabalho`, `Commander un travail`],
+    [`Tell me what you need and I'll get back to you`, `Cuéntame lo que necesitas y te responderé`, `Conte-me o que você precisa e eu respondo`, `Dites-moi ce dont vous avez besoin et je vous répondrai`],
+    [`Send your order`, `Envía tu pedido`, `Envie seu pedido`, `Envoyez votre commande`],
+    [`Pick a service and describe the job.`, `Elige un servicio y describe el trabajo.`, `Escolha um serviço e descreva o trabalho.`, `Choisissez un service et décrivez le travail.`],
+    [`We agree on details`, `Acordamos los detalles`, `Combinamos os detalhes`, `Nous convenons des détails`],
+    [`I reply by email or Discord with scope, price and timing.`, `Respondo por email o Discord con alcance, precio y plazos.`, `Respondo por e-mail ou Discord com escopo, preço e prazos.`, `Je réponds par e-mail ou Discord avec le périmètre, le prix et les délais.`],
+    [`I build it`, `Lo construyo`, `Eu construo`, `Je le réalise`],
+    [`You get updates and the finished work.`, `Recibes avances y el trabajo terminado.`, `Você recebe atualizações e o trabalho finalizado.`, `Vous recevez des mises à jour et le travail terminé.`],
+    [`Custom systems like combat, shops, tools and round logic.`, `Sistemas personalizados como combate, tiendas, herramientas y lógica de rondas.`, `Sistemas personalizados como combate, lojas, ferramentas e lógica de rodadas.`, `Systèmes sur mesure : combat, boutiques, outils et logique de manches.`],
+    [`DataStores & saving`, `DataStores y guardado`, `DataStores e salvamento`, `DataStores et sauvegarde`],
+    [`Player progress, inventories and currencies that save reliably.`, `Progreso, inventarios y monedas de los jugadores que se guardan de forma fiable.`, `Progresso, inventários e moedas dos jogadores que são salvos de forma confiável.`, `Progression, inventaires et monnaies des joueurs sauvegardés de façon fiable.`],
+    [`Menus, HUDs and shops built in Studio's UI system.`, `Menús, HUDs y tiendas creados con el sistema de UI de Studio.`, `Menus, HUDs e lojas criados no sistema de UI do Studio.`, `Menus, HUD et boutiques créés avec le système d'interface de Studio.`],
+    [`Environments, maps and lighting.`, `Entornos, mapas e iluminación.`, `Ambientes, mapas e iluminação.`, `Environnements, cartes et éclairage.`],
+    [`Rigging and posing for characters and props.`, `Rigging y poses para personajes y objetos.`, `Rigging e poses para personagens e objetos.`, `Rigging et poses pour personnages et accessoires.`],
+    [`Fix lag and keep frame rate and server load in check.`, `Elimina el lag y controla los FPS y la carga del servidor.`, `Corrija o lag e controle os FPS e a carga do servidor.`, `Corrigez les lags et maîtrisez les FPS et la charge du serveur.`],
+    [`Your order`, `Tu pedido`, `Seu pedido`, `Votre commande`],
+    [`Your name`, `Tu nombre`, `Seu nome`, `Votre nom`],
+    [`Email`, `Correo electrónico`, `E-mail`, `E-mail`],
+    [`Discord username`, `Usuario de Discord`, `Usuário do Discord`, `Nom d'utilisateur Discord`],
+    [`(optional)`, `(opcional)`, `(opcional)`, `(facultatif)`],
+    [`Service`, `Servicio`, `Serviço`, `Service`],
+    [`Choose a service`, `Elige un servicio`, `Escolha um serviço`, `Choisissez un service`],
+    [`DataStores / saving`, `DataStores / guardado`, `DataStores / salvamento`, `DataStores / sauvegarde`],
+    [`Interface (UI)`, `Interfaz (UI)`, `Interface (UI)`, `Interface (UI)`],
+    [`Something else`, `Otra cosa`, `Outra coisa`, `Autre chose`],
+    [`Budget`, `Presupuesto`, `Orçamento`, `Budget`],
+    [`Choose a range`, `Elige un rango`, `Escolha uma faixa`, `Choisissez une fourchette`],
+    [`Under $25`, `Menos de $25`, `Menos de $25`, `Moins de 25 $`],
+    [`$25 to $50`, `De $25 a $50`, `De $25 a $50`, `De 25 $ à 50 $`],
+    [`$50 to $100`, `De $50 a $100`, `De $50 a $100`, `De 50 $ à 100 $`],
+    [`$100 to $250`, `De $100 a $250`, `De $100 a $250`, `De 100 $ à 250 $`],
+    [`$250+`, `Más de $250`, `Mais de $250`, `Plus de 250 $`],
+    [`Not sure yet`, `Aún no lo sé`, `Ainda não sei`, `Pas encore sûr`],
+    [`Deadline`, `Fecha límite`, `Prazo`, `Date limite`],
+    [`What do you need?`, `¿Qué necesitas?`, `O que você precisa?`, `De quoi avez-vous besoin ?`],
+    [`Order sent`, `Pedido enviado`, `Pedido enviado`, `Commande envoyée`],
+    [`Thanks! I'll reply to the email you gave, or on Discord, to confirm the details.`, `¡Gracias! Responderé al correo que indicaste, o por Discord, para confirmar los detalles.`, `Obrigado! Vou responder ao e-mail que você informou, ou no Discord, para confirmar os detalhes.`, `Merci ! Je répondrai à l'e-mail indiqué, ou sur Discord, pour confirmer les détails.`],
+    [`Place another order`, `Hacer otro pedido`, `Fazer outro pedido`, `Passer une autre commande`],
+    [`Two quick things for Roblox creators`, `Dos herramientas rápidas para creadores de Roblox`, `Duas ferramentas rápidas para criadores do Roblox`, `Deux outils rapides pour les créateurs Roblox`],
+    [`Roblox user lookup`, `Buscador de usuarios de Roblox`, `Busca de usuários do Roblox`, `Recherche d'utilisateur Roblox`],
+    [`Type a Roblox username to see their avatar and profile info.`, `Escribe un nombre de usuario de Roblox para ver su avatar y datos de perfil.`, `Digite um nome de usuário do Roblox para ver o avatar e as informações do perfil.`, `Saisissez un nom d'utilisateur Roblox pour voir son avatar et les infos de son profil.`],
+    [`Look up`, `Buscar`, `Buscar`, `Rechercher`],
+    [`DevEx calculator`, `Calculadora de DevEx`, `Calculadora de DevEx`, `Calculateur DevEx`],
+    [`See how much USD your earned Robux cash out for, or how many you need for a goal.`, `Mira cuántos USD te dan tus Robux ganados, o cuántos necesitas para una meta.`, `Veja quantos USD seus Robux ganhos rendem, ou quantos você precisa para uma meta.`, `Voyez combien de USD valent vos Robux gagnés, ou combien il vous en faut pour un objectif.`],
+    [`Standard`, `Estándar`, `Padrão`, `Standard`],
+    [`US 18+ purchases`, `Compras de EE. UU. 18+`, `Compras de maiores de 18 nos EUA`, `Achats US 18+`],
+    [`Old balance`, `Saldo anterior`, `Saldo antigo`, `Ancien solde`],
+    [`Earned Robux`, `Robux ganados`, `Robux ganhos`, `Robux gagnés`],
+    [`Estimate only. Only Earned Robux count, and rates can change. See the`, `Solo es una estimación. Solo cuentan los Robux ganados y las tarifas pueden cambiar. Consulta la`, `É apenas uma estimativa. Só contam os Robux ganhos e as taxas podem mudar. Veja a`, `Estimation uniquement. Seuls les Robux gagnés comptent et les taux peuvent changer. Consultez la`],
+    [`official DevEx page`, `página oficial de DevEx`, `página oficial do DevEx`, `page officielle DevEx`],
+    [`before cashing out.`, `antes de retirar tu dinero.`, `antes de sacar o dinheiro.`, `avant d'encaisser.`],
+    [`Quick answers before you order`, `Respuestas rápidas antes de pedir`, `Respostas rápidas antes de pedir`, `Réponses rapides avant de commander`],
+    [`How does ordering work?`, `¿Cómo funcionan los pedidos?`, `Como funcionam os pedidos?`, `Comment fonctionne la commande ?`],
+    [`Fill in the order form with what you need. I reply by email or Discord to confirm the details, the price and the timing. Work starts once we've agreed.`, `Rellena el formulario de pedido con lo que necesitas. Respondo por email o Discord para confirmar los detalles, el precio y los plazos. El trabajo empieza cuando lo acordamos.`, `Preencha o formulário com o que você precisa. Respondo por e-mail ou Discord para confirmar os detalhes, o preço e os prazos. O trabalho começa quando combinarmos.`, `Remplissez le formulaire avec ce dont vous avez besoin. Je réponds par e-mail ou Discord pour confirmer les détails, le prix et les délais. Le travail commence une fois que nous sommes d'accord.`],
+    [`What does it cost?`, `¿Cuánto cuesta?`, `Quanto custa?`, `Combien ça coûte ?`],
+    [`It depends on the job. Pick the budget range closest to what you have in mind and I'll reply with a quote for your specific request.`, `Depende del trabajo. Elige el rango de presupuesto más cercano a lo que tienes en mente y te responderé con un presupuesto para tu encargo.`, `Depende do trabalho. Escolha a faixa de orçamento mais próxima do que você tem em mente e eu respondo com um orçamento para o seu pedido.`, `Cela dépend du travail. Choisissez la fourchette de budget la plus proche de ce que vous avez en tête et je vous répondrai avec un devis pour votre demande.`],
+    [`How long will it take?`, `¿Cuánto tardará?`, `Quanto tempo vai levar?`, `Combien de temps cela prendra-t-il ?`],
+    [`That depends on how big the job is and how many orders are ahead of yours. I give you a timeline when I reply to your order.`, `Depende de lo grande que sea el trabajo y de cuántos pedidos haya antes que el tuyo. Te doy un plazo cuando respondo a tu pedido.`, `Depende do tamanho do trabalho e de quantos pedidos estão na frente do seu. Informo um prazo quando responder ao seu pedido.`, `Cela dépend de l'ampleur du travail et du nombre de commandes avant la vôtre. Je vous donne un délai en répondant à votre commande.`],
+    [`What should I put in my order?`, `¿Qué debo poner en mi pedido?`, `O que devo colocar no meu pedido?`, `Que dois-je indiquer dans ma commande ?`],
+    [`Describe what you want the feature or build to do. Add a link to your game and any reference videos or screenshots if you have them. The more detail, the more accurate the quote.`, `Describe lo que quieres que haga la función o la construcción. Añade un enlace a tu juego y los vídeos de referencia o capturas que tengas. Cuanto más detalle, más preciso será el presupuesto.`, `Descreva o que você quer que o recurso ou a construção faça. Adicione o link do seu jogo e vídeos de referência ou capturas de tela, se tiver. Quanto mais detalhes, mais preciso será o orçamento.`, `Décrivez ce que la fonctionnalité ou la construction doit faire. Ajoutez un lien vers votre jeu et des vidéos de référence ou des captures d'écran si vous en avez. Plus il y a de détails, plus le devis sera précis.`],
+    [`What is the order queue?`, `¿Qué es la cola de pedidos?`, `O que é a fila de pedidos?`, `Qu'est-ce que la file de commandes ?`],
+    [`I only take a limited number of orders at a time so I can do each one properly. The queue counter shows how many spots are open. If it's full, you can still send an order and join the waitlist.`, `Solo acepto un número limitado de pedidos a la vez para hacer bien cada uno. El contador de la cola muestra cuántos huecos hay libres. Si está llena, aún puedes enviar un pedido y entrar en la lista de espera.`, `Aceito apenas um número limitado de pedidos por vez para fazer cada um direito. O contador da fila mostra quantas vagas estão abertas. Se estiver cheia, você ainda pode enviar um pedido e entrar na lista de espera.`, `Je n'accepte qu'un nombre limité de commandes à la fois pour bien faire chacune. Le compteur indique combien de places sont libres. Si la file est pleine, vous pouvez quand même envoyer une commande et rejoindre la liste d'attente.`],
+    [`How do I contact you?`, `¿Cómo te contacto?`, `Como entro em contato?`, `Comment vous contacter ?`],
+    [`Use the order form for work requests, or message me on Discord at .cuban for anything else.`, `Usa el formulario de pedido para encargos, o escríbeme por Discord a .cuban para cualquier otra cosa.`, `Use o formulário de pedido para trabalhos, ou me chame no Discord em .cuban para qualquer outra coisa.`, `Utilisez le formulaire pour les demandes de travail, ou écrivez-moi sur Discord à .cuban pour tout autre sujet.`],
+    [`I've been messing around in Roblox Studio since I was a kid, and at some point "messing around" turned into actually finishing things: scripting systems that work, building spaces that feel like somewhere, and figuring out the parts nobody tells you about until something breaks.`, `Llevo trasteando en Roblox Studio desde niño, y en algún momento «trastear» se convirtió en terminar cosas de verdad: scripts que funcionan, espacios que se sienten como un lugar y entender lo que nadie te cuenta hasta que algo se rompe.`, `Mexo no Roblox Studio desde criança, e em algum momento «mexer» virou terminar coisas de verdade: scripts que funcionam, espaços que parecem um lugar de verdade e descobrir o que ninguém conta até algo quebrar.`, `Je bidouille dans Roblox Studio depuis tout petit, et à un moment, « bidouiller » est devenu finir vraiment des choses : des systèmes qui fonctionnent, des espaces qui ont une vraie atmosphère, et comprendre ce que personne ne dit avant que quelque chose casse.`],
+    [`Most of what I know I picked up by taking something apart in Studio to see why it worked, then trying to build it better myself. I'm still doing that. If you want to talk Lua, level design, or just see what I'm working on, hit me up on Discord.`, `Casi todo lo que sé lo aprendí desmontando algo en Studio para ver por qué funcionaba y luego intentando construirlo mejor yo mismo. Sigo haciéndolo. Si quieres hablar de Lua, diseño de niveles o ver en qué estoy trabajando, escríbeme por Discord.`, `Quase tudo o que sei aprendi desmontando algo no Studio para ver por que funcionava e depois tentando construí-lo melhor. Ainda faço isso. Se quiser falar de Lua, level design ou ver no que estou trabalhando, me chame no Discord.`, `L'essentiel de ce que je sais, je l'ai appris en démontant quelque chose dans Studio pour comprendre comment il fonctionnait, puis en essayant de le refaire mieux. Je continue. Si vous voulez parler de Lua, de level design ou voir sur quoi je travaille, écrivez-moi sur Discord.`],
+    [`Want to build something together?`, `¿Quieres construir algo juntos?`, `Quer construir algo juntos?`, `Envie de construire quelque chose ensemble ?`],
+    [`Collabs, questions, or just Roblox dev talk. For paid work, use the order form above.`, `Colaboraciones, preguntas o simplemente charlar de desarrollo en Roblox. Para trabajos de pago, usa el formulario de pedido de arriba.`, `Colaborações, dúvidas ou só conversar sobre desenvolvimento no Roblox. Para trabalhos pagos, use o formulário de pedido acima.`, `Collaborations, questions ou simple discussion sur le développement Roblox. Pour un travail payant, utilisez le formulaire de commande ci-dessus.`],
+    [`Cuban's Roblox avatar`, `Avatar de Roblox de Cuban`, `Avatar do Roblox de Cuban`, `Avatar Roblox de Cuban`],
+    [`Pages`, `Páginas`, `Páginas`, `Pages`],
+    [`Search Cuban's profile`, `Buscar en el perfil de Cuban`, `Pesquisar no perfil de Cuban`, `Rechercher dans le profil de Cuban`],
+    [`Language`, `Idioma`, `Idioma`, `Langue`],
+    [`Switch to light theme`, `Cambiar a tema claro`, `Mudar para o tema claro`, `Passer au thème clair`],
+    [`Switch to dark theme`, `Cambiar a tema oscuro`, `Mudar para o tema escuro`, `Passer au thème sombre`],
+    [`Profile`, `Perfil`, `Perfil`, `Profil`],
+    [`Cover image of Cuban's Roblox avatar`, `Imagen de portada con el avatar de Roblox de Cuban`, `Imagem de capa com o avatar do Roblox de Cuban`, `Image de couverture avec l'avatar Roblox de Cuban`],
+    [`Describe the feature or job, and link your game or reference videos if you have them.`, `Describe la función o el trabajo y enlaza tu juego o vídeos de referencia si los tienes.`, `Descreva o recurso ou o trabalho e inclua o link do seu jogo ou vídeos de referência, se tiver.`, `Décrivez la fonctionnalité ou le travail, et ajoutez le lien de votre jeu ou des vidéos de référence si vous en avez.`],
+    [`Username`, `Usuario`, `Usuário`, `Nom d'utilisateur`],
+    [`Roblox username`, `Usuario de Roblox`, `Usuário do Roblox`, `Nom d'utilisateur Roblox`],
+    [`Exchange rate`, `Tarifa de cambio`, `Taxa de câmbio`, `Taux de change`],
+
+    /* Messages the page builds while it runs */
+    [`Currently taking {n} more order`, `Aceptando {n} pedido más`, `Aceitando mais {n} pedido`, `J'accepte encore {n} commande`],
+    [`Currently taking {n} more orders`, `Aceptando {n} pedidos más`, `Aceitando mais {n} pedidos`, `J'accepte encore {n} commandes`],
+    [`Queue full. New orders join the waitlist.`, `Cola llena. Los pedidos nuevos entran en lista de espera.`, `Fila cheia. Novos pedidos entram na lista de espera.`, `File pleine. Les nouvelles commandes rejoignent la liste d'attente.`],
+    [`Send order`, `Enviar pedido`, `Enviar pedido`, `Envoyer la commande`],
+    [`Join waitlist`, `Unirse a la lista de espera`, `Entrar na lista de espera`, `Rejoindre la liste d'attente`],
+    [`Sending...`, `Enviando...`, `Enviando...`, `Envoi...`],
+    [`Select`, `Elegir`, `Selecionar`, `Choisir`],
+    [`Selected`, `Elegido`, `Selecionado`, `Choisi`],
+    [`Please fill in your name, email, service, budget and details.`, `Rellena tu nombre, correo, servicio, presupuesto y detalles.`, `Preencha seu nome, e-mail, serviço, orçamento e detalhes.`, `Renseignez votre nom, e-mail, service, budget et détails.`],
+    [`That email address does not look right.`, `Ese correo no parece válido.`, `Esse e-mail não parece válido.`, `Cette adresse e-mail ne semble pas valide.`],
+    [`Could not send the order. Try again, or email {email} directly.`, `No se pudo enviar el pedido. Inténtalo de nuevo o escribe directamente a {email}.`, `Não foi possível enviar o pedido. Tente de novo ou escreva direto para {email}.`, `Impossible d'envoyer la commande. Réessayez ou écrivez directement à {email}.`],
+    [`Copy Discord: .cuban`, `Copiar Discord: .cuban`, `Copiar Discord: .cuban`, `Copier Discord : .cuban`],
+    [`Copied. Paste it in Discord!`, `¡Copiado! Pégalo en Discord.`, `Copiado! Cole no Discord.`, `Copié ! Collez-le dans Discord.`],
+    [`My Discord is .cuban. Add me there!`, `Mi Discord es .cuban. ¡Agrégame ahí!`, `Meu Discord é .cuban. Me adicione lá!`, `Mon Discord est .cuban. Ajoutez-moi !`],
+    [`Enter a Roblox username (3 to 20 letters, numbers or underscores).`, `Escribe un usuario de Roblox (3 a 20 letras, números o guiones bajos).`, `Digite um usuário do Roblox (3 a 20 letras, números ou sublinhados).`, `Saisissez un nom d'utilisateur Roblox (3 à 20 lettres, chiffres ou tirets bas).`],
+    [`Looking up {name}...`, `Buscando a {name}...`, `Buscando {name}...`, `Recherche de {name}...`],
+    [`No Roblox user called "{name}" was found.`, `No se encontró ningún usuario de Roblox llamado "{name}".`, `Nenhum usuário do Roblox chamado "{name}" foi encontrado.`, `Aucun utilisateur Roblox nommé « {name} » n'a été trouvé.`],
+    [`Could not reach Roblox data right now. Try again in a moment.`, `Ahora mismo no se pueden obtener los datos de Roblox. Inténtalo en un momento.`, `Não foi possível acessar os dados do Roblox agora. Tente novamente em instantes.`, `Impossible d'accéder aux données Roblox pour le moment. Réessayez dans un instant.`],
+    [`{name}'s Roblox avatar`, `Avatar de Roblox de {name}`, `Avatar do Roblox de {name}`, `Avatar Roblox de {name}`],
+    [`ID`, `ID`, `ID`, `ID`],
+    [`Joined`, `Se unió`, `Entrou em`, `Inscrit le`],
+    ['Rate: ${rate} per Robux, so 1,000 Robux = {a}. Minimum cash out: {min} earned Robux ({b}).', 'Tarifa: ${rate} por Robux, así que 1.000 Robux = {a}. Retiro mínimo: {min} Robux ganados ({b}).', 'Taxa: ${rate} por Robux, então 1.000 Robux = {a}. Saque mínimo: {min} Robux ganhos ({b}).', 'Taux : ${rate} par Robux, donc 1 000 Robux = {a}. Retrait minimum : {min} Robux gagnés ({b}).'],
+    [`Enter an amount to see if you reach the minimum.`, `Introduce una cantidad para ver si llegas al mínimo.`, `Digite um valor para ver se você atinge o mínimo.`, `Saisissez un montant pour voir si vous atteignez le minimum.`],
+    [`You meet the {min} Robux minimum.`, `Cumples el mínimo de {min} Robux.`, `Você atinge o mínimo de {min} Robux.`, `Vous atteignez le minimum de {min} Robux.`],
+    [`{n} more earned Robux needed to reach the minimum.`, `Faltan {n} Robux ganados para llegar al mínimo.`, `Faltam {n} Robux ganhos para chegar ao mínimo.`, `Il manque {n} Robux gagnés pour atteindre le minimum.`],
+  ];
+  const out = {};
+  LANGS.forEach(l => { out[l] = {}; });
+  ROWS.forEach(r => { LANGS.forEach((l, i) => { out[l][r[0]] = r[i + 1]; }); });
+  window.I18N = out;
+})();
+
+</script>
 <script>
 try{ var t0=localStorage.getItem('theme'); document.documentElement.setAttribute('data-theme', t0==='light'?'light':'dark'); }
 catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
 </script>
 </head>
 <body>
+<noscript><style>.loader{ display:none; }</style></noscript>
+<div class="loader" id="loader" aria-hidden="true">
+  <img class="av" data-img="avatar" alt="">
+  <div class="load-title">CUBAN</div>
+  <div class="load-bar"><i id="loadFill"></i></div>
+  <div class="load-sub"><span>Loading...</span> <span id="loadPct" data-noi18n>0%</span></div>
+</div>
+
 
 <!-- Top bar -->
 <header class="topbar">
-  <a class="brand" href="https://www.roblox.com/users/60340608/profile" target="_blank" rel="noopener">
+  <a class="brand" href="https://www.roblox.com/users/60340608/profile" data-track="roblox-profile" target="_blank" rel="noopener">
     <img class="av" data-img="avatar" alt="Cuban's Roblox avatar"> CUBAN
   </a>
   <nav class="toplinks" aria-label="Pages">
@@ -339,7 +504,6 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
     <a href="#devlogs">Devlogs</a>
     <a href="#order">Order</a>
     <a href="#tools">Tools</a>
-    <a href="#reviews">Reviews</a>
     <a href="#faq">FAQ</a>
     <a href="#about">About</a>
   </nav>
@@ -349,18 +513,24 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
       <input id="searchInput" type="text" placeholder="Search Cuban's profile" autocomplete="off" aria-label="Search Cuban's profile" aria-expanded="false" aria-controls="searchMenu">
     </label>
     <div class="menu" id="searchMenu" hidden>
-      <a class="result" href="https://www.roblox.com/users/60340608/profile" target="_blank" rel="noopener">
+      <a class="result" href="https://www.roblox.com/users/60340608/profile" data-track="roblox-profile" target="_blank" rel="noopener">
         <img class="av" data-img="avatar" alt="">
         <span><b>Cuban</b><small>View Roblox profile</small></span>
       </a>
     </div>
   </div>
   <div class="top-right">
+    <select class="langsel" id="langSel" aria-label="Language">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="pt">Português</option>
+      <option value="fr">Français</option>
+    </select>
     <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch to light theme">
       <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
     </button>
-    <a class="btn green" href="#order">Order now</a>
+    <a class="btn green" href="#order" data-track="order-now">Order now</a>
   </div>
 </header>
 
@@ -380,9 +550,6 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
     <a class="item" href="#tools">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0-5 5L3 18l3 3 6.5-6.5a4 4 0 0 0 5-5l-3 3-2.5-.5-.5-2.5z"/></svg> Tools
     </a>
-    <a class="item" href="#reviews">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg> Reviews
-    </a>
     <a class="item" href="#faq">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg> FAQ
     </a>
@@ -399,7 +566,6 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
       <a href="#devlogs">Devlogs</a>
       <a href="#order">Order</a>
       <a href="#tools">Tools</a>
-      <a href="#reviews">Reviews</a>
       <a href="#faq">FAQ</a>
       <a href="#about">About</a>
     </nav>
@@ -414,12 +580,12 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
             <h1>Cuban</h1>
             <div class="handle">Roblox developer &amp; scripter</div>
             <p class="tagline">I build worlds out of parts and Lua. Gameplay systems, environments, and finished experiences, with the process documented in devlogs.</p>
-            <div class="queue" data-queue></div>
+            <div class="queue" data-queue data-noi18n></div>
           </div>
           <div class="actions">
             <a class="btn green" href="#order">Place an order</a>
             <a class="btn grey" href="#games">Play my games</a>
-            <a class="btn grey" href="https://www.roblox.com/users/60340608/profile" target="_blank" rel="noopener">View on Roblox</a>
+            <a class="btn grey" href="https://www.roblox.com/users/60340608/profile" data-track="roblox-profile" target="_blank" rel="noopener">View on Roblox</a>
           </div>
         </div>
         <div class="stats">
@@ -436,7 +602,7 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
           <p>Jump in on Roblox</p>
         </div>
         <div class="games">
-          <a class="game" href="https://www.roblox.com/games/71593770750727/BALL-PHYSICS" target="_blank" rel="noopener">
+          <a class="game" href="https://www.roblox.com/games/71593770750727/BALL-PHYSICS" data-track="game-ball-physics" target="_blank" rel="noopener">
             <div class="thumb t1">
               <span class="glyph" aria-hidden="true">●</span>
               <span class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>
@@ -444,7 +610,7 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
             <h3>BALL PHYSICS</h3>
             <div class="sub"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play on Roblox</div>
           </a>
-          <a class="game" href="https://www.roblox.com/games/92527867271796/Anime-Lucky-BLocks" target="_blank" rel="noopener">
+          <a class="game" href="https://www.roblox.com/games/92527867271796/Anime-Lucky-BLocks" data-track="game-anime-lucky-blocks" target="_blank" rel="noopener">
             <div class="thumb t2">
               <span class="glyph" aria-hidden="true">?</span>
               <span class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>
@@ -505,7 +671,7 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
           <p>Tell me what you need and I'll get back to you</p>
         </div>
 
-        <div class="queue" data-queue></div>
+        <div class="queue" data-queue data-noi18n></div>
 
         <div class="steps">
           <div class="step"><div class="n">1</div><div><b>Send your order</b><span>Pick a service and describe the job.</span></div></div>
@@ -514,12 +680,12 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
         </div>
 
         <div class="services" id="services" role="radiogroup" aria-label="Choose a service">
-          <button type="button" class="service" data-service="Gameplay scripting" role="radio" aria-checked="false"><h3>Gameplay scripting</h3><p>Custom systems like combat, shops, tools and round logic.</p><span class="pick">Select</span></button>
-          <button type="button" class="service" data-service="DataStores / saving" role="radio" aria-checked="false"><h3>DataStores &amp; saving</h3><p>Player progress, inventories and currencies that save reliably.</p><span class="pick">Select</span></button>
-          <button type="button" class="service" data-service="Interface (UI)" role="radio" aria-checked="false"><h3>Interface design</h3><p>Menus, HUDs and shops built in Studio's UI system.</p><span class="pick">Select</span></button>
-          <button type="button" class="service" data-service="Building & terrain" role="radio" aria-checked="false"><h3>Building &amp; terrain</h3><p>Environments, maps and lighting.</p><span class="pick">Select</span></button>
-          <button type="button" class="service" data-service="Animation" role="radio" aria-checked="false"><h3>Animation</h3><p>Rigging and posing for characters and props.</p><span class="pick">Select</span></button>
-          <button type="button" class="service" data-service="Optimization" role="radio" aria-checked="false"><h3>Optimization</h3><p>Fix lag and keep frame rate and server load in check.</p><span class="pick">Select</span></button>
+          <button type="button" class="service" data-service="Gameplay scripting" role="radio" aria-checked="false"><h3>Gameplay scripting</h3><p>Custom systems like combat, shops, tools and round logic.</p><span class="pick" data-noi18n>Select</span></button>
+          <button type="button" class="service" data-service="DataStores / saving" role="radio" aria-checked="false"><h3>DataStores &amp; saving</h3><p>Player progress, inventories and currencies that save reliably.</p><span class="pick" data-noi18n>Select</span></button>
+          <button type="button" class="service" data-service="Interface (UI)" role="radio" aria-checked="false"><h3>Interface design</h3><p>Menus, HUDs and shops built in Studio's UI system.</p><span class="pick" data-noi18n>Select</span></button>
+          <button type="button" class="service" data-service="Building & terrain" role="radio" aria-checked="false"><h3>Building &amp; terrain</h3><p>Environments, maps and lighting.</p><span class="pick" data-noi18n>Select</span></button>
+          <button type="button" class="service" data-service="Animation" role="radio" aria-checked="false"><h3>Animation</h3><p>Rigging and posing for characters and props.</p><span class="pick" data-noi18n>Select</span></button>
+          <button type="button" class="service" data-service="Optimization" role="radio" aria-checked="false"><h3>Optimization</h3><p>Fix lag and keep frame rate and server load in check.</p><span class="pick" data-noi18n>Select</span></button>
         </div>
 
         <div class="order" id="orderBox">
@@ -535,13 +701,13 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
                 <label for="f-service">Service</label>
                 <select id="f-service" name="service" required>
                   <option value="">Choose a service</option>
-                  <option>Gameplay scripting</option>
-                  <option>DataStores / saving</option>
-                  <option>Interface (UI)</option>
-                  <option>Building &amp; terrain</option>
-                  <option>Animation</option>
-                  <option>Optimization</option>
-                  <option>Something else</option>
+                  <option value="Gameplay scripting">Gameplay scripting</option>
+                  <option value="DataStores / saving">DataStores / saving</option>
+                  <option value="Interface (UI)">Interface (UI)</option>
+                  <option value="Building &amp; terrain">Building &amp; terrain</option>
+                  <option value="Animation">Animation</option>
+                  <option value="Optimization">Optimization</option>
+                  <option value="Something else">Something else</option>
                 </select>
               </div>
             </div>
@@ -550,12 +716,12 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
                 <label for="f-budget">Budget</label>
                 <select id="f-budget" name="budget" required>
                   <option value="">Choose a range</option>
-                  <option>Under $25</option>
-                  <option>$25 to $50</option>
-                  <option>$50 to $100</option>
-                  <option>$100 to $250</option>
-                  <option>$250+</option>
-                  <option>Not sure yet</option>
+                  <option value="Under $25">Under $25</option>
+                  <option value="$25 to $50">$25 to $50</option>
+                  <option value="$50 to $100">$50 to $100</option>
+                  <option value="$100 to $250">$100 to $250</option>
+                  <option value="$250+">$250+</option>
+                  <option value="Not sure yet">Not sure yet</option>
                 </select>
               </div>
               <div class="field"><label for="f-deadline">Deadline <span class="hint">(optional)</span></label><input id="f-deadline" name="deadline" type="date"></div>
@@ -572,8 +738,8 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
             <input type="hidden" name="_captcha" value="false">
 
             <div class="submit-row">
-              <button class="btn green" type="submit" id="orderSubmit">Send order</button>
-              <span class="status" id="orderStatus" role="status" aria-live="polite"></span>
+              <button class="btn green" type="submit" id="orderSubmit" data-noi18n>Send order</button>
+              <span class="status" id="orderStatus" data-noi18n role="status" aria-live="polite"></span>
             </div>
           </form>
 
@@ -602,8 +768,8 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
               <input id="lookupInput" type="text" placeholder="Username" aria-label="Roblox username" autocomplete="off" maxlength="20">
               <button class="btn blue" type="submit" id="lookupBtn">Look up</button>
             </form>
-            <div class="lookup-msg" id="lookupMsg" role="status" aria-live="polite"></div>
-            <div class="profile-card" id="lookupCard" hidden>
+            <div class="lookup-msg" id="lookupMsg" data-noi18n role="status" aria-live="polite"></div>
+            <div class="profile-card" id="lookupCard" data-noi18n hidden>
               <img id="lcImg" alt="">
               <div>
                 <h4 id="lcName"></h4>
@@ -627,60 +793,11 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
               <div class="field"><label for="dx-usd">USD</label><input id="dx-usd" type="number" min="0" step="0.01" inputmode="decimal" placeholder="114.00"></div>
             </div>
             <div class="bar" aria-hidden="true"><i id="dxBar"></i></div>
-            <div class="minmsg" id="dxMsg" role="status" aria-live="polite"></div>
-            <p class="fine" id="dxRate"></p>
-            <p class="fine">Estimate only. Only Earned Robux count, and rates can change. Check Roblox's <a href="https://create.roblox.com/docs/production/monetization/developer-exchange" target="_blank" rel="noopener">DevEx page</a> before cashing out.</p>
+            <div class="minmsg" id="dxMsg" data-noi18n role="status" aria-live="polite"></div>
+            <p class="fine" id="dxRate" data-noi18n></p>
+            <p class="fine">Estimate only. Only Earned Robux count, and rates can change. See the <a href="https://create.roblox.com/docs/production/monetization/developer-exchange" target="_blank" rel="noopener">official DevEx page</a> before cashing out.</p>
           </div>
 
-        </div>
-      </section>
-
-      <!-- Reviews -->
-      <section class="block" id="reviews" data-page="reviews">
-        <div class="block-head">
-          <h2>Reviews</h2>
-          <p>From people I've worked with</p>
-        </div>
-        <div class="summary" id="reviewSummary" hidden></div>
-        <div class="reviews" id="reviewList"></div>
-        <div class="empty" id="reviewEmpty" hidden>No reviews yet. If you have worked with me, you can leave the first one below.</div>
-
-        <div class="order">
-          <form id="reviewForm" novalidate>
-            <h3>Leave a review</h3>
-            <div class="grid2">
-              <div class="field"><label for="r-name">Your name</label><input id="r-name" type="text" required maxlength="40"></div>
-              <div class="field">
-                <label for="r-service">What did I do for you? <span class="hint">(optional)</span></label>
-                <select id="r-service">
-                  <option value="">Choose a service</option>
-                  <option>Gameplay scripting</option>
-                  <option>DataStores / saving</option>
-                  <option>Interface (UI)</option>
-                  <option>Building &amp; terrain</option>
-                  <option>Animation</option>
-                  <option>Optimization</option>
-                  <option>Something else</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label id="r-rate-label">Rating</label>
-              <div class="starpick" id="starPick" role="radiogroup" aria-labelledby="r-rate-label"></div>
-            </div>
-            <div class="field"><label for="r-text">Your review</label><textarea id="r-text" required maxlength="600" placeholder="What was it like working together?"></textarea></div>
-            <input class="hp" type="text" id="r-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <div class="submit-row">
-              <button class="btn green" type="submit" id="reviewSubmit">Send review</button>
-              <span class="status" id="reviewStatus" role="status" aria-live="polite"></span>
-            </div>
-            <p class="fine">Reviews are checked before they appear on this page.</p>
-          </form>
-          <div class="done" id="reviewDone" hidden>
-            <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
-            <h3>Review sent</h3>
-            <p>Thanks! It will show up here once I've approved it.</p>
-          </div>
         </div>
       </section>
 
@@ -695,7 +812,6 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
         <details><summary>How long will it take?</summary><p>That depends on how big the job is and how many orders are ahead of yours. I give you a timeline when I reply to your order.</p></details>
         <details><summary>What should I put in my order?</summary><p>Describe what you want the feature or build to do. Add a link to your game and any reference videos or screenshots if you have them. The more detail, the more accurate the quote.</p></details>
         <details><summary>What is the order queue?</summary><p>I only take a limited number of orders at a time so I can do each one properly. The queue counter shows how many spots are open. If it's full, you can still send an order and join the waitlist.</p></details>
-        <details><summary>Why isn't my review showing yet?</summary><p>I check every review before it goes on the page, so there can be a short delay after you send it.</p></details>
         <details><summary>How do I contact you?</summary><p>Use the order form for work requests, or message me on Discord at .cuban for anything else.</p></details>
       </section>
 
@@ -715,13 +831,13 @@ catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
             <h2>Want to build something together?</h2>
             <p>Collabs, questions, or just Roblox dev talk. For paid work, use the order form above.</p>
           </div>
-          <button class="btn blue" id="discordBtn" onclick="copyDiscord()">Copy Discord: .cuban</button>
+          <button class="btn blue" id="discordBtn" data-noi18n data-track="discord-copy" onclick="copyDiscord()">Copy Discord: .cuban</button>
         </div>
       </section>
 
       <footer>
         <span>© 2026 Cuban</span>
-        <a href="https://www.roblox.com/users/60340608/profile" target="_blank" rel="noopener">roblox.com/users/60340608/profile</a>
+        <a href="https://www.roblox.com/users/60340608/profile" data-track="roblox-profile" target="_blank" rel="noopener">roblox.com/users/60340608/profile</a>
       </footer>
     </div>
   </main>
@@ -743,29 +859,36 @@ const BANNER = "data:image/webp;base64,UklGRvB+AABXRUJQVlA4WAoAAAAQAAAAfwIAfwIAQ
 /* ---------------------------------------------------------------
    SETTINGS YOU CAN EDIT
 
-   QUEUE: total = how many orders you take at once,
-          taken = how many you already have.
-          The site shows "Currently taking X more orders".
-
-   REVIEWS: approved reviews go in this list. When a review email
-   arrives, copy the "paste_to_approve" line from it into REVIEWS
-   (separate entries with commas), then re-upload this file.
-
-   DEVEX: current exchange rates (USD per earned Robux) and the
-          minimum cash out. Update here if Roblox changes them.
+   QUEUE:   total = how many orders you take at once, taken = how many
+            you already have. The site shows "Currently taking X more
+            orders". Change these numbers and re-upload the file.
+   ORDER_EMAIL: where orders are sent.
+   UMAMI_ID:    optional. Paste your Umami website ID to turn on
+                visitor analytics, or leave empty for none.
+   DEVEX:   exchange rates (USD per earned Robux) and minimum cash out.
 ---------------------------------------------------------------- */
+const I18N = window.I18N || {};
 const QUEUE = { total: 5, taken: 3 };
-const REVIEWS = [
-  // { "name": "Example", "rating": 5, "service": "Gameplay scripting", "text": "Great work!", "date": "2026-10-08" }
-];
+const ORDER_EMAIL = 'humbertoleon151@gmail.com';
+const UMAMI_ID = '';
 const DEVEX = { standard: 0.0038, plus18: 0.0054, legacy: 0.0035, min: 30000 };
 /* Roblox's own API blocks requests from other websites, so the lookup
    uses roproxy.com, a free public mirror that allows them. */
 const RBX = { users: 'https://users.roproxy.com', thumbs: 'https://thumbnails.roproxy.com' };
 
-document.querySelectorAll('img[data-img="avatar"]').forEach(img => {
-  if (AVATAR) img.src = AVATAR;
-});
+/* ---------- Language helpers ---------- */
+let LANG = 'en';
+try { LANG = localStorage.getItem('lang') || ''; } catch(e) {}
+if (LANG !== 'en' && !I18N[LANG]){
+  const nl = (navigator.language || 'en').slice(0, 2).toLowerCase();
+  LANG = I18N[nl] ? nl : 'en';
+}
+function tr(s){ if (LANG === 'en') return s; const d = I18N[LANG]; return (d && d[s]) || s; }
+function fill(s, vars){ let o = s; for (const k in vars) o = o.split('{' + k + '}').join(vars[k]); return o; }
+function trf(s, vars){ return fill(tr(s), vars); }
+
+/* ---------- Images ---------- */
+document.querySelectorAll('img[data-img="avatar"]').forEach(img => { if (AVATAR) img.src = AVATAR; });
 if (BANNER) {
   const c = document.getElementById('cover');
   c.style.backgroundImage = 'url("' + BANNER + '"), radial-gradient(ellipse at 50% 30%,#f6b8c1 0%,#e0768a 45%,#9c3f55 100%)';
@@ -774,7 +897,35 @@ if (BANNER) {
   c.style.backgroundRepeat = 'no-repeat, no-repeat';
 }
 
+/* ---------- Loading screen (first visit of a session) ---------- */
+(function(){
+  const loader = document.getElementById('loader');
+  if (!loader) return;
+  const fillEl = document.getElementById('loadFill');
+  const pctEl = document.getElementById('loadPct');
+  let seen = false;
+  try { seen = sessionStorage.getItem('seenLoader') === '1'; } catch(e) {}
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (seen || reduce){ loader.remove(); return; }
+  try { sessionStorage.setItem('seenLoader', '1'); } catch(e) {}
+  let pct = 0, finished = false;
+  const start = Date.now();
+  const tick = setInterval(() => {
+    pct = Math.min(90, pct + 6 + Math.random() * 8);
+    fillEl.style.width = pct + '%'; pctEl.textContent = Math.floor(pct) + '%';
+  }, 90);
+  function finish(){
+    if (finished) return; finished = true;
+    setTimeout(() => {
+      clearInterval(tick); fillEl.style.width = '100%'; pctEl.textContent = '100%';
+      setTimeout(() => { loader.classList.add('done'); setTimeout(() => loader.remove(), 450); }, 220);
+    }, Math.max(0, 900 - (Date.now() - start)));
+  }
+  if (document.readyState === 'complete') finish(); else window.addEventListener('load', finish);
+  setTimeout(finish, 5000);
+})();
 
+/* ---------- Search menu ---------- */
 const sInput = document.getElementById('searchInput');
 const sMenu = document.getElementById('searchMenu');
 const sWrap = document.getElementById('searchwrap');
@@ -784,8 +935,44 @@ sInput.addEventListener('click', () => setMenu(true));
 document.addEventListener('click', e => { if (!sWrap.contains(e.target)) setMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu(false); sInput.blur(); } });
 
+/* ---------- Analytics (Umami) ---------- */
+let analyticsReady = false;
+function track(name, data){
+  if (analyticsReady && window.umami && window.umami.track) window.umami.track(name, data);
+}
+function trackPage(page){
+  if (analyticsReady && window.umami && window.umami.track){
+    window.umami.track(props => Object.assign({}, props, { url: '/' + page, title: document.title }));
+  }
+}
+function loadAnalytics(){
+  if (!UMAMI_ID) return;
+  const sc = document.createElement('script');
+  sc.defer = true; sc.src = 'https://cloud.umami.is/script.js';
+  sc.setAttribute('data-website-id', UMAMI_ID);
+  sc.setAttribute('data-auto-track', 'false');
+  sc.onload = () => { analyticsReady = true; trackPage(currentPage); };
+  document.head.appendChild(sc);
+}
+document.addEventListener('click', e => {
+  const el = e.target.closest ? e.target.closest('[data-track]') : null;
+  if (el) track(el.getAttribute('data-track'));
+});
+
+/* ---------- Theme ---------- */
+const themeBtn = document.getElementById('themeBtn');
+function themeLabel(){ return tr(document.documentElement.getAttribute('data-theme') === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'); }
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.setAttribute('aria-label', themeLabel());
+  try { localStorage.setItem('theme', t); } catch(e) {}
+}
+themeBtn.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  track('theme-toggle');
+});
+
 /* ---------- Orders ---------- */
-const ORDER_EMAIL = 'humbertoleon151@gmail.com';
 const form = document.getElementById('orderForm');
 const statusEl = document.getElementById('orderStatus');
 const submitBtn = document.getElementById('orderSubmit');
@@ -798,69 +985,26 @@ function pickService(name){
     const on = t.dataset.service === name;
     t.classList.toggle('selected', on);
     t.setAttribute('aria-checked', on);
-    t.querySelector('.pick').textContent = on ? 'Selected' : 'Select';
+    t.querySelector('.pick').textContent = tr(on ? 'Selected' : 'Select');
   });
 }
 tiles.forEach(t => t.addEventListener('click', () => {
-  svcSelect.value = t.dataset.service === 'Building & terrain' ? 'Building & terrain' : t.dataset.service;
+  svcSelect.value = t.dataset.service;
   pickService(t.dataset.service);
   document.getElementById('orderBox').scrollIntoView({ behavior:'smooth', block:'start' });
 }));
 svcSelect.addEventListener('change', () => pickService(svcSelect.value));
-
 function setStatus(msg, isErr){ statusEl.textContent = msg; statusEl.className = 'status' + (isErr ? ' err' : ''); }
 
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  setStatus('', false);
-  const data = Object.fromEntries(new FormData(form).entries());
-  if (data._honey) return;                      // bots fill this in
-  if (!data.name.trim() || !data.email.trim() || !data.service || !data.budget || !data.details.trim()){
-    setStatus('Please fill in your name, email, service, budget and details.', true); return;
-  }
-  const em = data.email.trim(); const at = em.indexOf('@');
-  if (at < 1 || em.indexOf('.', at) < at + 2 || em.endsWith('.') || em.includes(' ')){
-    setStatus('That email address does not look right.', true); return;
-  }
-  submitBtn.disabled = true; submitBtn.textContent = 'Sending...';
-  try{
-    const res = await fetch('https://formsubmit.co/ajax/' + ORDER_EMAIL, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-      body: JSON.stringify(Object.assign({}, data, { _replyto: data.email, queue_status: queueText(), _subject: openSlots() > 0 ? data._subject : 'New WAITLIST order from your Roblox portfolio' }))
-    });
-    const out = await res.json().catch(() => ({}));
-    if (!res.ok || out.success === 'false') throw new Error('send failed');
-    form.hidden = true; doneEl.hidden = false; form.reset(); pickService('');
-    doneEl.scrollIntoView({ behavior:'smooth', block:'center' });
-  }catch(err){
-    setStatus('Could not send the order. Try again, or email ' + ORDER_EMAIL + ' directly.', true);
-  }finally{
-    submitBtn.disabled = false; submitBtn.textContent = orderLabel();
-  }
-});
-document.getElementById('orderAgain').addEventListener('click', () => { doneEl.hidden = true; form.hidden = false; });
-
-/* ---------- Theme ---------- */
-const themeBtn = document.getElementById('themeBtn');
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme', t);
-  themeBtn.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
-  try { localStorage.setItem('theme', t); } catch(e) {}
-}
-themeBtn.addEventListener('click', () => {
-  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-});
-themeBtn.setAttribute('aria-label', document.documentElement.getAttribute('data-theme') === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
-
-/* ---------- Queue ---------- */
+/* Queue */
 function openSlots(){ return Math.max(0, QUEUE.total - QUEUE.taken); }
-function queueText(){
+function queueText(english){
   const n = openSlots();
-  if (n === 0) return 'Queue full. New orders join the waitlist.';
-  return 'Currently taking ' + n + ' more order' + (n === 1 ? '' : 's');
+  const f = english ? fill : trf;
+  if (n === 0) return f('Queue full. New orders join the waitlist.', {});
+  return f(n === 1 ? 'Currently taking {n} more order' : 'Currently taking {n} more orders', { n: n });
 }
-function orderLabel(){ return openSlots() > 0 ? 'Send order' : 'Join waitlist'; }
+function orderLabel(){ return tr(openSlots() > 0 ? 'Send order' : 'Join waitlist'); }
 function renderQueue(){
   const n = openSlots();
   document.querySelectorAll('[data-queue]').forEach(el => {
@@ -872,12 +1016,48 @@ function renderQueue(){
       d.className = 'dot ' + (i < QUEUE.taken ? 'taken' : 'open');
       dots.appendChild(d);
     }
-    const label = document.createElement('span'); label.textContent = queueText();
+    const label = document.createElement('span'); label.textContent = queueText(false);
     el.appendChild(dots); el.appendChild(label);
   });
-  submitBtn.textContent = orderLabel();
+  if (!submitBtn.disabled) submitBtn.textContent = orderLabel();
 }
-renderQueue();
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  setStatus('', false);
+  const data = Object.fromEntries(new FormData(form).entries());
+  if (data._honey) return;
+  if (!data.name.trim() || !data.email.trim() || !data.service || !data.budget || !data.details.trim()){
+    setStatus(tr('Please fill in your name, email, service, budget and details.'), true); return;
+  }
+  const em = data.email.trim(); const at = em.indexOf('@');
+  if (at < 1 || em.indexOf('.', at) < at + 2 || em.endsWith('.') || em.includes(' ')){
+    setStatus(tr('That email address does not look right.'), true); return;
+  }
+  submitBtn.disabled = true; submitBtn.textContent = tr('Sending...');
+  const waitlist = openSlots() === 0;
+  const row = {
+    name: data.name.trim(), email: em, discord: (data.discord || '').trim(), service: data.service,
+    budget: data.budget, deadline: data.deadline || null, details: data.details.trim(),
+    queue_status: queueText(true), lang: LANG
+  };
+  const mailPromise = fetch('https://formsubmit.co/ajax/' + ORDER_EMAIL, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+    body: JSON.stringify(Object.assign({}, data, { _replyto: em, queue_status: row.queue_status, customer_language: LANG,
+      _subject: waitlist ? 'New WAITLIST order from your Roblox portfolio' : data._subject }))
+  }).then(res => res.json().catch(() => ({})).then(out => res.ok && out.success !== 'false')).catch(() => false);
+  const mailed = await mailPromise;
+  if (mailed){
+    form.hidden = true; doneEl.hidden = false; form.reset(); pickService('');
+    doneEl.scrollIntoView({ behavior:'smooth', block:'center' });
+    track('order-sent', { service: row.service });
+  } else {
+    setStatus(trf('Could not send the order. Try again, or email {email} directly.', { email: ORDER_EMAIL }), true);
+  }
+  submitBtn.disabled = false; submitBtn.textContent = orderLabel();
+});
+document.getElementById('orderAgain').addEventListener('click', () => { doneEl.hidden = true; form.hidden = false; });
 
 /* ---------- Roblox lookup ---------- */
 const lookupForm = document.getElementById('lookupForm');
@@ -894,8 +1074,8 @@ lookupForm.addEventListener('submit', async e => {
   e.preventDefault();
   const name = lookupInput.value.trim();
   lookupCard.hidden = true;
-  if (!validName(name)){ lookupStatus('Enter a Roblox username (3 to 20 letters, numbers or underscores).', true); return; }
-  lookupBtn.disabled = true; lookupStatus('Looking up ' + name + '...', false);
+  if (!validName(name)){ lookupStatus(tr('Enter a Roblox username (3 to 20 letters, numbers or underscores).'), true); return; }
+  lookupBtn.disabled = true; lookupStatus(trf('Looking up {name}...', { name: name }), false);
   try{
     const r1 = await fetch(RBX.users + '/v1/usernames/users', {
       method:'POST', headers:{ 'Content-Type':'application/json' },
@@ -903,7 +1083,7 @@ lookupForm.addEventListener('submit', async e => {
     });
     if (!r1.ok) throw new Error('lookup failed');
     const found = (await r1.json()).data || [];
-    if (!found.length){ lookupStatus('No Roblox user called "' + name + '" was found.', true); return; }
+    if (!found.length){ lookupStatus(trf('No Roblox user called "{name}" was found.', { name: name }), true); return; }
     const id = found[0].id;
     const [r2, r3] = await Promise.all([
       fetch(RBX.users + '/v1/users/' + id),
@@ -913,16 +1093,19 @@ lookupForm.addEventListener('submit', async e => {
     const u = await r2.json();
     const t = r3.ok ? ((await r3.json()).data || [])[0] : null;
     document.getElementById('lcName').textContent = u.displayName || u.name;
-    const joined = u.created ? new Date(u.created).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }) : '';
-    document.getElementById('lcMeta').textContent = '@' + u.name + ' | ID ' + id + (joined ? ' | Joined ' + joined : '');
+    const joined = u.created ? new Date(u.created).toLocaleDateString(LANG, { year:'numeric', month:'short', day:'numeric' }) : '';
+    document.getElementById('lcMeta').textContent = '@' + u.name + ' | ' + tr('ID') + ' ' + id + (joined ? ' | ' + tr('Joined') + ' ' + joined : '');
     document.getElementById('lcBio').textContent = u.description || '';
     const img = document.getElementById('lcImg');
-    img.alt = (u.displayName || u.name) + "'s Roblox avatar";
+    img.alt = trf("{name}'s Roblox avatar", { name: u.displayName || u.name });
     if (t && t.imageUrl && t.imageUrl.indexOf('https://') === 0) img.src = t.imageUrl; else img.removeAttribute('src');
-    document.getElementById('lcLink').href = 'https://www.roblox.com/users/' + id + '/profile';
+    const link = document.getElementById('lcLink');
+    link.href = 'https://www.roblox.com/users/' + id + '/profile';
+    link.textContent = tr('View on Roblox');
     lookupCard.hidden = false; lookupStatus('', false);
+    track('tool-lookup');
   }catch(err){
-    lookupStatus('Could not reach Roblox data right now. Try again in a moment.', true);
+    lookupStatus(tr('Could not reach Roblox data right now. Try again in a moment.'), true);
   }finally{
     lookupBtn.disabled = false;
   }
@@ -937,6 +1120,7 @@ const dxRate = document.getElementById('dxRate');
 const chips = document.querySelectorAll('.chip');
 let dxMode = 'standard';
 let dxLast = 'robux';
+let dxTracked = false;
 function money(n){ return '$' + n.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
 function dxUpdate(){
   const rate = DEVEX[dxMode];
@@ -949,130 +1133,111 @@ function dxUpdate(){
     robux = usd >= 0 ? Math.ceil(usd / rate) : NaN;
     dxRobux.value = robux >= 0 ? robux : '';
   }
-  dxRate.textContent = 'Rate: $' + rate + ' per Robux, so 1,000 Robux = ' + money(rate * 1000) + '. Minimum cash out: ' + DEVEX.min.toLocaleString('en-US') + ' earned Robux (' + money(rate * DEVEX.min) + ').';
-  if (!(robux >= 0)){ dxBar.style.width = '0'; dxMsg.textContent = 'Enter an amount to see if you reach the minimum.'; return; }
+  const minTxt = DEVEX.min.toLocaleString('en-US');
+  dxRate.textContent = trf('Rate: ${rate} per Robux, so 1,000 Robux = {a}. Minimum cash out: {min} earned Robux ({b}).',
+    { rate: rate, a: money(rate * 1000), min: minTxt, b: money(rate * DEVEX.min) });
+  if (!(robux >= 0)){ dxBar.style.width = '0'; dxMsg.textContent = tr('Enter an amount to see if you reach the minimum.'); return; }
   dxBar.style.width = Math.min(100, robux / DEVEX.min * 100) + '%';
-  if (robux >= DEVEX.min) dxMsg.textContent = 'You meet the ' + DEVEX.min.toLocaleString('en-US') + ' Robux minimum.';
-  else dxMsg.textContent = (DEVEX.min - robux).toLocaleString('en-US') + ' more earned Robux needed to reach the minimum.';
+  if (robux >= DEVEX.min) dxMsg.textContent = trf('You meet the {min} Robux minimum.', { min: minTxt });
+  else dxMsg.textContent = trf('{n} more earned Robux needed to reach the minimum.', { n: (DEVEX.min - robux).toLocaleString('en-US') });
 }
-dxRobux.addEventListener('input', () => { dxLast = 'robux'; dxUpdate(); });
-dxUsd.addEventListener('input', () => { dxLast = 'usd'; dxUpdate(); });
+function dxTouched(){ if (!dxTracked){ dxTracked = true; track('tool-devex'); } }
+dxRobux.addEventListener('input', () => { dxLast = 'robux'; dxTouched(); dxUpdate(); });
+dxUsd.addEventListener('input', () => { dxLast = 'usd'; dxTouched(); dxUpdate(); });
 chips.forEach(c => c.addEventListener('click', () => {
   dxMode = c.dataset.rate;
   chips.forEach(x => x.setAttribute('aria-checked', x === c));
   dxUpdate();
 }));
-dxUpdate();
-
-/* ---------- Reviews ---------- */
-function renderReviews(){
-  const list = document.getElementById('reviewList');
-  const sum = document.getElementById('reviewSummary');
-  list.textContent = '';
-  document.getElementById('reviewEmpty').hidden = REVIEWS.length > 0;
-  sum.hidden = REVIEWS.length === 0;
-  if (!REVIEWS.length) return;
-  const avg = REVIEWS.reduce((a, r) => a + Number(r.rating || 0), 0) / REVIEWS.length;
-  sum.textContent = '';
-  const st = document.createElement('span'); st.className = 'stars'; st.textContent = '\u2605'.repeat(Math.round(avg)); st.setAttribute('aria-hidden', 'true');
-  const tx = document.createElement('span'); tx.textContent = avg.toFixed(1) + ' out of 5 (' + REVIEWS.length + ' review' + (REVIEWS.length === 1 ? '' : 's') + ')';
-  sum.appendChild(st); sum.appendChild(tx);
-  REVIEWS.forEach(r => {
-    const card = document.createElement('div'); card.className = 'review';
-    const stars = document.createElement('div'); stars.className = 'stars';
-    stars.textContent = '\u2605'.repeat(Number(r.rating) || 0);
-    stars.setAttribute('aria-label', (Number(r.rating) || 0) + ' out of 5 stars');
-    const p = document.createElement('p'); p.textContent = r.text || '';
-    const by = document.createElement('small'); by.textContent = (r.name || 'Anonymous') + (r.service ? ' | ' + r.service : '') + (r.date ? ' | ' + r.date : '');
-    card.appendChild(stars); card.appendChild(p); card.appendChild(by);
-    list.appendChild(card);
-  });
-}
-renderReviews();
-
-let reviewRating = 0;
-const starPick = document.getElementById('starPick');
-for (let i = 1; i <= 5; i++){
-  const b = document.createElement('button');
-  b.type = 'button'; b.textContent = '\u2605'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false');
-  b.setAttribute('aria-label', i + ' star' + (i === 1 ? '' : 's'));
-  b.addEventListener('click', () => { reviewRating = i; paintStars(); });
-  starPick.appendChild(b);
-}
-function paintStars(){
-  Array.from(starPick.children).forEach((b, idx) => {
-    b.classList.toggle('on', idx < reviewRating);
-    b.setAttribute('aria-checked', idx + 1 === reviewRating);
-  });
-}
-const reviewForm = document.getElementById('reviewForm');
-const reviewStatus = document.getElementById('reviewStatus');
-const reviewSubmit = document.getElementById('reviewSubmit');
-reviewForm.addEventListener('submit', async e => {
-  e.preventDefault();
-  reviewStatus.textContent = ''; reviewStatus.className = 'status';
-  if (document.getElementById('r-honey').value) return;
-  const name = document.getElementById('r-name').value.trim();
-  const text = document.getElementById('r-text').value.trim();
-  const service = document.getElementById('r-service').value;
-  if (!name || !text || !reviewRating){
-    reviewStatus.textContent = 'Please add your name, a star rating and your review.'; reviewStatus.className = 'status err'; return;
-  }
-  reviewSubmit.disabled = true; reviewSubmit.textContent = 'Sending...';
-  const entry = { name: name, rating: reviewRating, service: service, text: text, date: new Date().toISOString().slice(0, 10) };
-  try{
-    const res = await fetch('https://formsubmit.co/ajax/' + ORDER_EMAIL, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-      body: JSON.stringify({
-        _subject: 'New review to approve', _template: 'table', _captcha: 'false',
-        name: name, rating: reviewRating + ' / 5', service: service || '(not given)', review: text,
-        how_to_approve: 'Copy the paste_to_approve line into the REVIEWS list in index.html and re-upload the file.',
-        paste_to_approve: JSON.stringify(entry) + ','
-      })
-    });
-    const out = await res.json().catch(() => ({}));
-    if (!res.ok || out.success === 'false') throw new Error('send failed');
-    reviewForm.hidden = true; document.getElementById('reviewDone').hidden = false; reviewForm.reset(); reviewRating = 0; paintStars();
-  }catch(err){
-    reviewStatus.textContent = 'Could not send the review. Try again in a moment.'; reviewStatus.className = 'status err';
-  }finally{
-    reviewSubmit.disabled = false; reviewSubmit.textContent = 'Send review';
-  }
-});
 
 /* ---------- Pages (one section of the site at a time) ---------- */
-const PAGES = ['home', 'devlogs', 'order', 'tools', 'reviews', 'faq', 'about'];
+const PAGES = ['home', 'devlogs', 'order', 'tools', 'faq', 'about'];
 const ALIAS = { games:'home', skills:'home', top:'home', videos:'devlogs', contact:'about' };
-const PAGE_TITLES = { home:'Cuban - Roblox Developer', devlogs:'Devlogs - Cuban', order:'Order - Cuban', tools:'Tools - Cuban', reviews:'Reviews - Cuban', faq:'FAQ - Cuban', about:'About - Cuban' };
+const PAGE_LABELS = { home:'Home', devlogs:'Devlogs', order:'Order', tools:'Tools', faq:'FAQ', about:'About' };
+let currentPage = 'home';
+function setTitle(){ document.title = currentPage === 'home' ? 'Cuban - Roblox Developer' : tr(PAGE_LABELS[currentPage]) + ' - Cuban'; }
 function route(){
   const h = location.hash.replace('#', '');
   const page = PAGES.indexOf(h) > -1 ? h : (ALIAS[h] || 'home');
+  currentPage = page;
   document.querySelectorAll('[data-page]').forEach(el => {
     el.hidden = el.dataset.page.split(' ').indexOf(page) === -1;
   });
   document.querySelectorAll('.toplinks a, .side a.item, .mobnav a').forEach(a => {
     if (a.getAttribute('href') === '#' + page) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
-  document.title = PAGE_TITLES[page];
+  setTitle();
+  const pageEl = document.querySelector('.page');
+  pageEl.classList.remove('page-in'); void pageEl.offsetWidth; pageEl.classList.add('page-in');
   const target = ALIAS[h] ? document.getElementById(h) : null;
   if (target && !target.hidden) target.scrollIntoView(); else window.scrollTo(0, 0);
   const active = document.querySelector('.mobnav a[aria-current="page"]');
   if (active && active.scrollIntoView) active.scrollIntoView({ inline:'center', block:'nearest' });
+  trackPage(page);
 }
 window.addEventListener('hashchange', route);
-route();
+
+/* ---------- Language switching ---------- */
+const langSel = document.getElementById('langSel');
+const SKIP_TAGS = { SCRIPT:1, STYLE:1, NOSCRIPT:1 };
+const ATTRS = ['placeholder', 'aria-label', 'alt', 'title'];
+function translateDom(){
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(n){
+      const p = n.parentElement;
+      if (!p || SKIP_TAGS[p.tagName] || p.closest('[data-noi18n]')) return NodeFilter.FILTER_REJECT;
+      return n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => {
+    if (n._en === undefined){
+      const v = n.nodeValue, t = v.trim(), i = v.indexOf(t);
+      n._en = t; n._lead = v.slice(0, i); n._trail = v.slice(i + t.length);
+    }
+    n.nodeValue = n._lead + tr(n._en) + n._trail;
+  });
+  document.querySelectorAll('[placeholder],[aria-label],[alt],[title]').forEach(el => {
+    if (el.closest('[data-noi18n]')) return;
+    if (!el._enAttr) el._enAttr = {};
+    ATTRS.forEach(a => {
+      if (!el.hasAttribute(a)) return;
+      if (el._enAttr[a] === undefined) el._enAttr[a] = el.getAttribute(a);
+      el.setAttribute(a, tr(el._enAttr[a]));
+    });
+  });
+}
+function applyLang(){
+  document.documentElement.setAttribute('lang', LANG);
+  langSel.value = LANG;
+  translateDom();
+  themeBtn.setAttribute('aria-label', themeLabel());
+  document.getElementById('discordBtn').textContent = tr('Copy Discord: .cuban');
+  lookupCard.hidden = true; lookupMsg.textContent = '';
+  renderQueue(); dxUpdate(); pickService(svcSelect.value); setTitle();
+}
+langSel.addEventListener('change', () => {
+  LANG = langSel.value;
+  try { localStorage.setItem('lang', LANG); } catch(e) {}
+  applyLang();
+  track('language', { lang: LANG });
+});
 
 function copyDiscord(){
   const btn = document.getElementById('discordBtn');
-  const original = btn.textContent;
   navigator.clipboard.writeText('.cuban').then(() => {
-    btn.textContent = 'Copied. Paste it in Discord!';
-    setTimeout(() => { btn.textContent = original; }, 1800);
+    btn.textContent = tr('Copied. Paste it in Discord!');
+    setTimeout(() => { btn.textContent = tr('Copy Discord: .cuban'); }, 1800);
   }).catch(() => {
-    alert('My Discord is .cuban. Add me there!');
+    alert(tr('My Discord is .cuban. Add me there!'));
   });
 }
+
+/* ---------- Start ---------- */
+applyLang();
+route();
+loadAnalytics();
 </script>
 </body>
 </html>
